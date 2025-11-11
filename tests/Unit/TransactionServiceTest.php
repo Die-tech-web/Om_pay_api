@@ -27,24 +27,27 @@ class TransactionServiceTest extends TestCase
 
         // Créer des utilisateurs de test
         $this->user1 = User::create([
-            'name' => 'User 1',
+            'nom' => 'User 1',
+            'prenom' => 'Test',
             'email' => 'user1@test.com',
             'telephone' => '123456789',
-            'password' => bcrypt('password'),
+            'role' => 'client',
         ]);
 
         $this->user2 = User::create([
-            'name' => 'User 2',
+            'nom' => 'User 2',
+            'prenom' => 'Test',
             'email' => 'user2@test.com',
             'telephone' => '987654321',
-            'password' => bcrypt('password'),
+            'role' => 'client',
         ]);
 
         // Créer des comptes de test
         $this->compte1 = Compte::create([
             'id_client' => $this->user1->id,
             'numero_compte' => 'ACC001',
-            'type' => 'principal',
+            'code_pin' => '1234',
+            'type' => 'client',
             'date_creation' => now(),
             'statut' => 'actif',
         ]);
@@ -52,7 +55,8 @@ class TransactionServiceTest extends TestCase
         $this->compte2 = Compte::create([
             'id_client' => $this->user2->id,
             'numero_compte' => 'ACC002',
-            'type' => 'principal',
+            'code_pin' => '1234',
+            'type' => 'client',
             'date_creation' => now(),
             'statut' => 'actif',
         ]);
@@ -82,6 +86,7 @@ class TransactionServiceTest extends TestCase
         try {
             // Effectuer un transfert de 10000 avec frais
             $transaction = $this->transactionService->createTransaction($this->compte1, [
+                'type' => 'transfert',
                 'montant_transaction' => 10000,
                 'numero_telephone' => '987654321', // Téléphone du user2
             ]);
@@ -117,7 +122,8 @@ class TransactionServiceTest extends TestCase
         $compte = Compte::create([
             'id_client' => $this->user1->id,
             'numero_compte' => 'ACC003',
-            'type' => 'principal',
+            'code_pin' => '1234',
+            'type' => 'client',
             'date_creation' => now(),
             'statut' => 'actif',
         ]);
@@ -136,6 +142,7 @@ class TransactionServiceTest extends TestCase
         $this->expectExceptionMessage('Solde insuffisant pour couvrir le montant et les frais');
 
         $this->transactionService->createTransaction($compte, [
+            'type' => 'transfert',
             'montant_transaction' => 10000,
             'numero_telephone' => '987654321',
         ]);

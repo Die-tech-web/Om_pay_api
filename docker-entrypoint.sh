@@ -18,5 +18,8 @@ else
     echo "Passport keys already exist."
 fi
 
+echo "Installing Passport clients with UUIDs..."
+php artisan passport:install --uuids --force
+
 echo "Starting Laravel application..."
 exec "$@"

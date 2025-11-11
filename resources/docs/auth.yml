@@ -1,0 +1,244 @@
+openapi: 3.0.3
+info:
+  title: OM Pay API - Authentification
+  description: Endpoints d'authentification pour l'API OM Pay
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+
+paths:
+  /register:
+    post:
+      summary: Inscription d'un nouvel utilisateur
+      description: Inscription d'un nouvel utilisateur avec envoi automatique d'email de confirmation contenant les identifiants de connexion
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nom
+                - prenom
+                - telephone
+                - email
+                - code_pin
+              properties:
+                nom:
+                  type: string
+                  example: "Fatou"
+                prenom:
+                  type: string
+                  example: "Fall"
+                telephone:
+                  type: string
+                  example: "771234567"
+                email:
+                  type: string
+                  format: email
+                  example: "fatou.fall@gmail.com"
+                code_pin:
+                  type: string
+                  example: "1234"
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "OE093939304004040040"
+                          nom:
+                            type: string
+                            example: "Fatou"
+                          prenom:
+                            type: string
+                            example: "Fall"
+                          telephone:
+                            type: string
+                            example: "771234567"
+                          email:
+                            type: string
+                            example: "fatou.fall@gmail.com"
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
+                      compte:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "uuid-string"
+                          id_client:
+                            type: string
+                            example: "OE093939304004040040"
+                          numero_compte:
+                            type: string
+                            example: "OMABC12345678"
+                          type:
+                            type: string
+                            enum: ["client", "marchand"]
+                            example: "client"
+                          date_creation:
+                            type: string
+                            format: date
+                            example: "2024-01-15"
+                          statut:
+                            type: string
+                            enum: ["actif", "bloque", "ferme"]
+                            example: "actif"
+                          code_pin:
+                            type: string
+                            example: "1234"
+                            description: "Code PIN en clair (pour référence uniquement)"
+                          solde:
+                            type: number
+                            format: float
+                            example: 0
+                          metadata:
+                            type: object
+                            properties:
+                              derniereModification:
+                                type: string
+                                format: date-time
+                              version:
+                                type: integer
+                                example: 1
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
+                      access_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      refresh_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      token_type:
+                        type: string
+                        example: "Bearer"
+                      expires_in:
+                        type: integer
+                        example: 3600
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-11-10T09:47:17.442309Z"
+                      refresh_expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-12-10T08:47:17.442409Z"
+        '422':
+          description: Erreur de validation
+
+  /login:
+    post:
+      summary: Connexion d'un utilisateur
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - telephone
+                - code_pin
+              properties:
+                telephone:
+                  type: string
+                  example: "771234567"
+                code_pin:
+                  type: string
+                  example: "1234"
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Connexion réussie"
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      refresh_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      token_type:
+                        type: string
+                        example: "Bearer"
+                      expires_in:
+                        type: integer
+                        example: 3600
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-11-10T09:47:17.442309Z"
+                      refresh_expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-12-10T08:47:17.442409Z"
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "OE093939304004040040"
+                          nom:
+                            type: string
+                            example: "Fatou"
+                          prenom:
+                            type: string
+                            example: "Fall"
+                          telephone:
+                            type: string
+                            example: "771234567"
+                          email:
+                            type: string
+                            example: "fatou.fall@gmail.com"
+                          role:
+                            type: string
+                            example: "client"
+                            description: "Tous les utilisateurs sont clients par défaut"
+        '401':
+          description: Téléphone ou code PIN invalide
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT

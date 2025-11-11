@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+class AuthService
+{
+    protected $compteService;
+
+    public function __construct(CompteService $compteService)
+    {
+        $this->compteService = $compteService;
+    }
+
+    public function register(array $data)
+    {
+        $user = User::create([
+            'nom' => $data['nom'],
+            'prenom' => $data['prenom'],
+            'telephone' => $data['telephone'],
+            'role' => 'client', // Tous les utilisateurs sont des clients par défaut
+        ]);
+
+        // Créer un compte par défaut pour l'utilisateur en utilisant le CompteService
+        // Cela garantira automatiquement un solde initial de 50 000f
+        $compte = $this->compteService->createCompte($user, [
+            'type' => 'client',
+            'code_pin' => $data['code_pin']
+        ]);
+
+        // Mettre à jour le code PIN (hachage sécurisé)
+        $compte->update(['code_pin' => Hash::make($data['code_pin'])]);
+
+        $token = $user->createToken('AuthToken', [], now()->addMinutes(60))->accessToken;
+        $refreshToken = $user->createToken('RefreshToken', [], now()->addDays(30))->accessToken;
+
+        // Calculer les dates d'expiration
+        $accessTokenExpiresAt = now()->addMinutes(60);
+        $refreshTokenExpiresAt = now()->addDays(30);
+
+        // Retourner le compte avec le code PIN en clair (pas hashé)
+        $compteArray = $compte->toArray();
+        $compteArray['code_pin'] = $data['code_pin'];
+
+        return [
+            'user' => $user,
+            'compte' => $compteArray,
+            'access_token' => $token,
+            'refresh_token' => $refreshToken,
+            'token_type' => 'Bearer',
+            'expires_in' => 60 * 60,
+            'expires_at' => $accessTokenExpiresAt->toISOString(),
+            'refresh_expires_at' => $refreshTokenExpiresAt->toISOString(),
+        ];
+    }
+
+    public function login(array $data)
+    {
+        $user = User::where('telephone', $data['telephone'])->first();
+
+        if (!$user) {
+            return null;
+        }
+
+        // Vérifier le code PIN sur le compte principal de l'utilisateur
+        $compte = $user->comptes()->first();
+        if (!$compte || !Hash::check($data['code_pin'], $compte->code_pin)) {
+            return null;
+        }
+
+        // Créer le token d'accès
+        $accessToken = $user->createToken('AuthToken', [], now()->addMinutes(60))->accessToken;
+        
+        // Créer le refresh token
+        $refreshToken = $user->createToken('RefreshToken', [], now()->addDays(30))->accessToken;
+
+        // Calculer les dates d'expiration
+        $accessTokenExpiresAt = now()->addMinutes(60);
+        $refreshTokenExpiresAt = now()->addDays(30);
+
+        return [
+            'access_token' => $accessToken,
+            'refresh_token' => $refreshToken,
+            'token_type' => 'Bearer',
+            'expires_in' => 60 * 60, // 60 minutes en secondes
+            'expires_at' => $accessTokenExpiresAt->toISOString(),
+            'refresh_expires_at' => $refreshTokenExpiresAt->toISOString(),
+            'user' => [
+                'id' => $user->id,
+                'nom' => $user->nom,
+                'prenom' => $user->prenom,
+                'telephone' => $user->telephone,
+                'role' => $user->role,
+            ],
+        ];
+    }
+
+    public function logout($user)
+    {
+        $user->token()->revoke();
+    }
+}

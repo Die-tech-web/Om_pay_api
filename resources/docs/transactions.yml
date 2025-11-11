@@ -1,0 +1,291 @@
+openapi: 3.0.3
+info:
+  title: OM Pay API - Gestion des Transactions
+  description: Endpoints de gestion des transactions pour l'API OM Pay
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+
+paths:
+  /mes-transactions:
+    get:
+      summary: Lister mes transactions
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      description: "Récupérer les transactions de l'utilisateur connecté (ID du compte récupéré depuis le token)"
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["depot", "retrait", "paiement", "transfert"]
+          description: Filtrer par type de transaction
+        - name: statut
+          in: query
+          schema:
+            type: string
+            enum: ["en_attente", "validee", "annulee"]
+          description: Filtrer par statut
+      responses:
+        '200':
+          description: Transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "transactions récupérés avec succès"
+                  data:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            libelle:
+                              type: string
+                              example: "Transfert d'argent"
+                            montant:
+                              type: string
+                              example: "-10 000 CFA"
+                            destinataire:
+                              type: object
+                              properties:
+                                nom:
+                                  type: string
+                                  example: "John Doe"
+                                numero:
+                                  type: string
+                                  example: "771234567"
+                                est_client:
+                                  type: boolean
+                                  example: true
+                            date:
+                              type: string
+                              format: date
+                              example: "2025-12-03"
+                            reference:
+                              type: string
+                              example: "PP2025111097Z.AB72D3"
+                            type:
+                              type: string
+                              example: "transfert"
+                            statut:
+                              type: string
+                              example: "validee"
+                      pagination:
+                        type: object
+                        properties:
+                          total_items:
+                            type: integer
+                            example: 25
+                          items_per_page:
+                            type: integer
+                            example: 20
+                          current_page:
+                            type: integer
+                            example: 1
+                          has_previous:
+                            type: boolean
+                            example: false
+                          has_next:
+                            type: boolean
+                            example: true
+                          links:
+                            type: object
+                            properties:
+                              first:
+                                type: string
+                                example: "http://localhost:8000/api/mes-transactions?page=1"
+                              previous:
+                                type: string
+                                nullable: true
+                                example: null
+                              next:
+                                type: string
+                                nullable: true
+                                example: "http://localhost:8000/api/mes-transactions?page=2"
+                              last:
+                                type: string
+                                example: "http://localhost:8000/api/mes-transactions?page=2"
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+    post:
+      summary: Effectuer une transaction
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - montant_transaction
+              properties:
+                type:
+                  type: string
+                  enum: ["depot", "retrait", "paiement", "transfert"]
+                  description: "Type de transaction (OBLIGATOIRE)"
+                  example: "transfert"
+                numero_telephone:
+                  type: string
+                  description: "Numéro téléphone du destinataire pour les transferts (requis si type=transfert)"
+                  example: "+221771234567"
+                code_marchand:
+                  type: string
+                  description: "Code marchand pour les paiements (requis si type=paiement)"
+                  example: "CAF001"
+                montant_transaction:
+                  type: number
+                  minimum: 0.01
+                  description: "Montant de la transaction"
+                  example: 1000
+            examples:
+              transfert:
+                summary: "Exemple de transfert d'argent"
+                value:
+                  type: "transfert"
+                  numero_telephone: "+221771234567"
+                  montant_transaction: 5000
+              paiement:
+                summary: "Exemple de paiement marchand"
+                value:
+                  type: "paiement"
+                  code_marchand: "CAF001"
+                  montant_transaction: 2500
+              depot:
+                summary: "Exemple de dépôt d'argent"
+                value:
+                  type: "depot"
+                  montant_transaction: 10000
+              retrait:
+                summary: "Exemple de retrait"
+                value:
+                  type: "retrait"
+                  montant_transaction: 3000
+      responses:
+        '201':
+          description: Transaction effectuée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transaction effectuée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      libelle:
+                        type: string
+                        example: "Transfert d'argent"
+                      montant:
+                        type: string
+                        example: "-1 000 CFA"
+                      client:
+                        type: string
+                        example: "771234567"
+                      date:
+                        type: string
+                        example: "10/11/2025"
+                      reference:
+                        type: string
+                        example: "PP2025111097Z.AB72D3"
+                      type:
+                        type: string
+                        example: "transfert"
+        '400':
+          description: Erreur de validation ou solde insuffisant
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+        '422':
+          description: Paramètres invalides - fournissez soit un numéro de téléphone (transfert) soit un code marchand (paiement)
+
+  /mes-transactions/{reference}:
+    get:
+      summary: Afficher une transaction spécifique par référence
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          description: Référence de la transaction
+          schema:
+            type: string
+            example: "PP2025111097Z.AB72D3"
+      responses:
+        '200':
+          description: Transaction récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transaction récupérée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      libelle:
+                        type: string
+                        example: "Transfert d'argent"
+                      montant:
+                        type: string
+                        example: "-10000 CFA"
+                      client:
+                        type: string
+                        example: "771597536"
+                      date:
+                        type: string
+                        example: "08/11/2025"
+                      reference:
+                        type: string
+                        example: "PP20251003994.B20303"
+                      type:
+                        type: string
+                        example: "transfert"
+                      statut:
+                        type: string
+                        example: "validee"
+                      date_transaction:
+                        type: string
+                        format: date-time
+                        example: "2025-11-08T14:30:00"
+        '401':
+          description: Non authentifié
+        '404':
+          description: Transaction non trouvée
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT

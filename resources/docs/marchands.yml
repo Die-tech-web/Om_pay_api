@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: OM Pay API - Gestion des Marchands
+  description: Endpoints de gestion des marchands pour l'API OM Pay
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+
+paths:
+  /marchands:
+    get:
+      summary: Lister les marchands actifs
+      tags:
+        - Marchands
+      security: []
+      description: "Récupérer la liste des marchands disponibles pour les paiements"
+      responses:
+        '200':
+          description: Marchands récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Marchands récupérés avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        nom:
+                          type: string
+                          example: "Café du Plateau"
+                        code_marchand:
+                          type: string
+                          example: "CAF001"
+                        type_commerce:
+                          type: string
+                          example: "Restauration"
+
+  /marchands/{id}:
+    get:
+      summary: Afficher un marchand spécifique
+      tags:
+        - Marchands
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du marchand
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Marchand récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Marchand récupéré avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      nom:
+                        type: string
+                        example: "Café du Plateau"
+                      code_marchand:
+                        type: string
+                        example: "CAF001"
+                      adresse:
+                        type: string
+                        example: "Plateau, Dakar"
+                      telephone:
+                        type: string
+                        example: "771234567"
+                      email:
+                        type: string
+                        example: "contact@cafeduplateau.sn"
+                      type_commerce:
+                        type: string
+                        example: "Restauration"
+                      actif:
+                        type: boolean
+                        example: true
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+        '404':
+          description: Marchand non trouvé
+
+securitySchemes: {}

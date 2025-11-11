@@ -1,0 +1,600 @@
+openapi: 3.0.3
+info:
+  title: OM Pay API
+  description: API de paiement mobile OM Pay
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+  - url: https://api.ompay.com
+    description: Serveur de production
+
+tags:
+  - name: Authentification
+    description: Endpoints d'authentification
+  - name: Comptes
+    description: Gestion des comptes
+  - name: Transactions
+    description: Gestion des transactions
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token d'authentification JWT. Utilisez le token retourné par l'endpoint de login.
+
+paths:
+  # Authentification
+  /register:
+    post:
+      summary: Inscription d'un nouvel utilisateur
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nom
+                - prenom
+                - telephone
+                - code_pin
+              properties:
+                nom:
+                  type: string
+                  example: "Fatou"
+                prenom:
+                  type: string
+                  example: "Fall"
+                telephone:
+                  type: string
+                  example: "771234567"
+                code_pin:
+                  type: string
+                  example: "1234"
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "OE093939304004040040"
+                          nom:
+                            type: string
+                            example: "Fatou"
+                          prenom:
+                            type: string
+                            example: "Fall"
+                          telephone:
+                            type: string
+                            example: "771234567"
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
+                      compte:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "uuid-string"
+                          numero_compte:
+                            type: string
+                            example: "OMABC12345678"
+                          statut:
+                            type: string
+                            example: "actif"
+                          solde:
+                            type: number
+                            example: 0
+                      access_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      refresh_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      token_type:
+                        type: string
+                        example: "Bearer"
+                      expires_in:
+                        type: integer
+                        example: 3600
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-11-09T24:45:23.000Z"
+                      refresh_expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-12-09T23:45:23.000Z"
+        '422':
+          description: Erreur de validation
+
+  /login:
+    post:
+      summary: Connexion d'un utilisateur
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - telephone
+                - code_pin
+              properties:
+                telephone:
+                  type: string
+                  example: "771234567"
+                code_pin:
+                  type: string
+                  example: "1234"
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Connexion réussie"
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      refresh_token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+                      token_type:
+                        type: string
+                        example: "Bearer"
+                      expires_in:
+                        type: integer
+                        example: 3600
+                      expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-11-09T24:45:23.000Z"
+                      refresh_expires_at:
+                        type: string
+                        format: date-time
+                        example: "2025-12-09T23:45:23.000Z"
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "OE093939304004040040"
+                          nom:
+                            type: string
+                            example: "Fatou"
+                          prenom:
+                            type: string
+                            example: "Fall"
+                          telephone:
+                            type: string
+                            example: "771234567"
+                          telephone:
+                            type: string
+                            example: "771234567"
+        '401':
+          description: Téléphone ou code PIN invalide
+
+  # Comptes
+  /comptes:
+    get:
+      summary: Lister les comptes de l'utilisateur
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Comptes récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Comptes récupérés avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid-string"
+                        numero_compte:
+                          type: string
+                          example: "OMABC12345678"
+                        statut:
+                          type: string
+                          example: "actif"
+                        solde:
+                          type: number
+                          example: 150000.50
+    post:
+      summary: Créer un nouveau compte
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                  description: "Type de compte (optionnel - tous les comptes sont des comptes clients par défaut)"
+                  example: "client"
+      responses:
+        '201':
+          description: Compte créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Compte créé avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "uuid-string"
+                      numero_compte:
+                        type: string
+                        example: "OMABC12345678"
+                      statut:
+                        type: string
+                        example: "actif"
+                      solde:
+                        type: number
+                        example: 0
+
+  /comptes/{id}:
+    get:
+      summary: Afficher un compte spécifique
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "uuid-string"
+      responses:
+        '200':
+          description: Compte récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Compte récupéré avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "uuid-string"
+                      numero_compte:
+                        type: string
+                        example: "OMABC12345678"
+                      type:
+                        type: string
+                        example: "client"
+                      statut:
+                        type: string
+                        example: "actif"
+                      solde:
+                        type: number
+                        example: 150000.50
+        '404':
+          description: Compte non trouvé
+
+  # Transactions
+  /comptes/{compte}/transactions:
+    get:
+      summary: Lister les transactions d'un compte
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: compte
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du compte
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["depot", "retrait", "paiement", "transfert", "frais"]
+          description: Filtrer par type de transaction
+        - name: statut
+          in: query
+          schema:
+            type: string
+            enum: ["en_attente", "validee", "annulee"]
+          description: Filtrer par statut
+      responses:
+        '200':
+          description: Transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transactions récupérées avec succès"
+                  data:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            libelle:
+                              type: string
+                              example: "Transfert d'argent"
+                            montant:
+                              type: string
+                              example: "-10 000 CFA"
+                            destinataire:
+                              type: object
+                              properties:
+                                nom:
+                                  type: string
+                                  nullable: true
+                                  example: "Marie Martin"
+                                numero:
+                                  type: string
+                                  nullable: true
+                                  example: "771234568"
+                                est_client:
+                                  type: boolean
+                                  example: true
+                                code_marchand:
+                                  type: string
+                                  nullable: true
+                                  example: "123-456"
+                                type_operation:
+                                  type: string
+                                  nullable: true
+                                  example: "Dépôt"
+                            date:
+                              type: string
+                              format: date
+                              example: "2025-12-03"
+                            type:
+                              type: string
+                              example: "transfert"
+                            statut:
+                              type: string
+                              example: "validee"
+                      pagination:
+                        type: object
+                        properties:
+                          total_items:
+                            type: integer
+                            example: 25
+                          items_per_page:
+                            type: integer
+                            example: 20
+                          current_page:
+                            type: integer
+                            example: 1
+                          has_previous:
+                            type: boolean
+                            example: false
+                          has_next:
+                            type: boolean
+                            example: true
+                          links:
+                            type: object
+                            properties:
+                              first:
+                                type: string
+                                example: "http://localhost:8000/api/mes-transactions?page=1"
+                              previous:
+                                type: string
+                                nullable: true
+                                example: null
+                              next:
+                                type: string
+                                nullable: true
+                                example: "http://localhost:8000/api/mes-transactions?page=2"
+                              last:
+                                type: string
+                                example: "http://localhost:8000/api/mes-transactions?page=2"
+    post:
+      summary: Effectuer une transaction
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: compte
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du compte
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numero_telephone:
+                  type: string
+                  example: "+221771234567"
+                  description: "Numéro téléphone du destinataire pour les transferts"
+                code_marchand:
+                  type: string
+                  example: "123-456"
+                  description: "Code marchand pour les paiements"
+                montant_transaction:
+                  type: number
+                  example: 500
+                  description: "Montant de la transaction"
+      responses:
+        '201':
+          description: Transaction effectuée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transaction effectuée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      libelle:
+                        type: string
+                        example: "Transfert d'argent"
+                      montant:
+                        type: string
+                        example: "-10000 CFA"
+                      client:
+                        type: string
+                        example: "771597536"
+                      date:
+                        type: string
+                        example: "08/11/2025"
+                      reference:
+                        type: string
+                        example: "PP20251003994.B20303"
+                      type:
+                        type: string
+                        example: "transfert"
+
+  /comptes/{compte}/transactions/{transaction}:
+    get:
+      summary: Afficher une transaction spécifique
+      tags:
+        - Transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: compte
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID du compte
+        - name: transaction
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID de la transaction
+      responses:
+        '200':
+          description: Transaction récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transaction récupérée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      libelle:
+                        type: string
+                        example: "Transfert d'argent"
+                      montant:
+                        type: string
+                        example: "-10000 CFA"
+                      client:
+                        type: string
+                        example: "771597536"
+                      date:
+                        type: string
+                        example: "08/11/2025"
+                      reference:
+                        type: string
+                        example: "PP20251003994.B20303"
+                      type:
+                        type: string
+                        example: "transfert"
+                      statut:
+                        type: string
+                        example: "validee"
+        '404':
+          description: Transaction non trouvée

@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: OM Pay API - Gestion des Comptes
+  description: Endpoints de gestion des comptes pour l'API OM Pay
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+
+paths:
+  /mon-compte:
+    get:
+      summary: Voir mon compte
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      description: "Récupérer les informations du compte de l'utilisateur connecté (ID récupéré depuis le token)"
+      responses:
+        '200':
+          description: Compte récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Compte récupéré avec succès"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "uuid-string"
+                      id_client:
+                        type: string
+                        example: "OE093939304004040040"
+                      numero_compte:
+                        type: string
+                        example: "OMABC12345678"
+                      type:
+                        type: string
+                        enum: ["client", "marchand"]
+                        example: "client"
+                      date_creation:
+                        type: string
+                        format: date
+                        example: "2024-01-15"
+                      statut:
+                        type: string
+                        enum: ["actif", "bloque", "ferme"]
+                        example: "actif"
+                      solde:
+                        type: number
+                        format: float
+                        example: 150000.50
+                        description: "Solde calculé dynamiquement"
+                      metadata:
+                        type: object
+                        properties:
+                          derniereModification:
+                            type: string
+                            format: date-time
+                          version:
+                            type: integer
+                            example: 1
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT

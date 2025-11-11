@@ -27,7 +27,7 @@ class SoldeInitialSeeder extends Seeder
                 ->exists();
 
             if (!$aDejaSoldeInitial) {
-                // Créer une transaction de dépôt pour le solde initial
+                // Créer une transaction de dépôt pour le solde initial TESTER
                 Transaction::create([
                     'compte_id' => $compte->id,
                     'type' => 'depot',

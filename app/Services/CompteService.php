@@ -6,6 +6,7 @@ use App\Models\Compte;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CompteService
 {
@@ -18,12 +19,19 @@ class CompteService
 
     public function createCompte(User $user, array $data)
     {
+        $numeroCompte = $this->generateNumeroCompte();
+
+        // Générer le code QR en SVG base64
+        $qrCodeData = 'OM-PAY Account: ' . $numeroCompte;
+        $codeQr = base64_encode(QrCode::format('svg')->size(200)->generate($qrCodeData));
+
         $compte = $user->comptes()->create([
-            'numero_compte' => $this->generateNumeroCompte(),
+            'numero_compte' => $numeroCompte,
             'code_pin' => \Illuminate\Support\Facades\Hash::make($data['code_pin']),
             'type' => $data['type'] ?? 'client',
             'date_creation' => now()->toDateString(),
             'statut' => 'actif',
+            'code_qr' => $codeQr,
             'metadata' => [
                 'derniereModification' => now(),
                 'version' => 1,

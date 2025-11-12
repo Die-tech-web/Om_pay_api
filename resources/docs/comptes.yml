@@ -54,6 +54,10 @@ paths:
                         type: string
                         enum: ["actif", "bloque", "ferme"]
                         example: "actif"
+                      code_qr:
+                        type: string
+                        description: "Code QR en base64 pour le compte"
+                        example: "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAgAElEQVR4nOz9..."
                       solde:
                         type: number
                         format: float

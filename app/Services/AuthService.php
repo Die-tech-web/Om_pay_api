@@ -52,6 +52,7 @@ class AuthService
 
         return [
             'user' => $user,
+            'compte' => $compteArray,
         ];
     }
 

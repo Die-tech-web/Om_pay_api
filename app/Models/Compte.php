@@ -20,6 +20,7 @@ class Compte extends Model
         'date_creation',
         'statut',
         'metadata',
+        'code_qr',
     ];
 
     protected $casts = [

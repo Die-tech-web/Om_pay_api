@@ -87,6 +87,48 @@ paths:
                           updated_at:
                             type: string
                             format: date-time
+                      compte:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "0192c8b0-8b4a-7c8b-9b4a-8b4a7c8b9b4a"
+                          id_client:
+                            type: string
+                            example: "OE093939304004040040"
+                          numero_compte:
+                            type: string
+                            example: "OM12345678"
+                          code_pin:
+                            type: string
+                            example: "1234"
+                          type:
+                            type: string
+                            example: "client"
+                          date_creation:
+                            type: string
+                            format: date
+                            example: "2025-11-12"
+                          statut:
+                            type: string
+                            example: "actif"
+                          code_qr:
+                            type: string
+                            description: "Code QR en base64 pour le compte"
+                            example: "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAgAElEQVR4nOz9..."
+                          solde:
+                            type: number
+                            format: float
+                            example: 50000.00
+                          metadata:
+                            type: object
+                            example: {"derniereModification": "2025-11-12T13:00:00Z", "version": 1}
+                          created_at:
+                            type: string
+                            format: date-time
+                          updated_at:
+                            type: string
+                            format: date-time
         '422':
           description: Erreur de validation
 

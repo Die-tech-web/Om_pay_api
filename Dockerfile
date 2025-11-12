@@ -31,20 +31,21 @@ RUN apk add --no-cache \
     libzip-dev \
     oniguruma-dev \
     icu-dev \
-    libxml2-dev
+    libxml2-dev \
+    $PHPIZE_DEPS
 
-# Configurer et installer les extensions PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo \
-        pdo_pgsql \
-        gd \
-        zip \
-        mbstring \
-        intl \
-        bcmath \
-        xml \
-        tokenizer
+# Configurer et installer GD avec la nouvelle syntaxe pour PHP 8.3
+RUN docker-php-ext-configure gd \
+        --enable-gd \
+        --with-freetype \
+        --with-jpeg
+
+# Installer les extensions PHP une par une pour voir laquelle pose problème
+RUN docker-php-ext-install -j$(nproc) pdo pdo_pgsql
+RUN docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-install -j$(nproc) zip
+RUN docker-php-ext-install -j$(nproc) intl
+RUN docker-php-ext-install -j$(nproc) bcmath
 
 # Créer un utilisateur non-root
 RUN addgroup -g 1000 laravel && adduser -G laravel -g laravel -s /bin/sh -D laravel

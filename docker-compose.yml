@@ -10,32 +10,16 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - MAIL_MAILER=smtp
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=587
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MAIL_ENCRYPTION=tls
-      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
-      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
     volumes:
-      - .:/var/www/html                  # Code source
-      - /var/www/html/vendor             # Vendor (dépendances)
-      - ./storage:/var/www/html/storage  # Persistance logs, cache, clés Passport
-
+      - .:/var/www/html
+      - /var/www/html/vendor
     depends_on:
       db:
         condition: service_healthy
-
-    # Commandes artisan à exécuter au démarrage
     command: >
       sh -c "
-        php artisan key:generate &&
         php artisan migrate --force &&
         php artisan db:seed --force &&
-        php artisan passport:keys --force &&
-        php artisan passport:install --uuids --force &&
-        php artisan l5-swagger:generate &&
         php artisan serve --host=0.0.0.0 --port=8000
       "
 
@@ -45,7 +29,6 @@ services:
       POSTGRES_DB: laravel
       POSTGRES_USER: laravel
       POSTGRES_PASSWORD: password
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
     ports:
       - "5432:5432"
     volumes:

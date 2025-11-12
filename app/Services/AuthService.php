@@ -52,13 +52,6 @@ class AuthService
 
         return [
             'user' => $user,
-            'compte' => $compteArray,
-            'access_token' => $token,
-            'refresh_token' => $refreshToken,
-            'token_type' => 'Bearer',
-            'expires_in' => 60 * 60,
-            'expires_at' => $accessTokenExpiresAt->toISOString(),
-            'refresh_expires_at' => $refreshTokenExpiresAt->toISOString(),
         ];
     }
 

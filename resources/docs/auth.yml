@@ -78,79 +78,15 @@ paths:
                           email:
                             type: string
                             example: "fatou.fall@gmail.com"
-                          created_at:
+                          role:
                             type: string
-                            format: date-time
-                          updated_at:
-                            type: string
-                            format: date-time
-                      compte:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                            example: "uuid-string"
-                          id_client:
-                            type: string
-                            example: "OE093939304004040040"
-                          numero_compte:
-                            type: string
-                            example: "OMABC12345678"
-                          type:
-                            type: string
-                            enum: ["client", "marchand"]
                             example: "client"
-                          date_creation:
-                            type: string
-                            format: date
-                            example: "2024-01-15"
-                          statut:
-                            type: string
-                            enum: ["actif", "bloque", "ferme"]
-                            example: "actif"
-                          code_pin:
-                            type: string
-                            example: "1234"
-                            description: "Code PIN en clair (pour référence uniquement)"
-                          solde:
-                            type: number
-                            format: float
-                            example: 0
-                          metadata:
-                            type: object
-                            properties:
-                              derniereModification:
-                                type: string
-                                format: date-time
-                              version:
-                                type: integer
-                                example: 1
                           created_at:
                             type: string
                             format: date-time
                           updated_at:
                             type: string
                             format: date-time
-                      access_token:
-                        type: string
-                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
-                      refresh_token:
-                        type: string
-                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
-                      token_type:
-                        type: string
-                        example: "Bearer"
-                      expires_in:
-                        type: integer
-                        example: 3600
-                      expires_at:
-                        type: string
-                        format: date-time
-                        example: "2025-11-10T09:47:17.442309Z"
-                      refresh_expires_at:
-                        type: string
-                        format: date-time
-                        example: "2025-12-10T08:47:17.442409Z"
         '422':
           description: Erreur de validation
 

@@ -3,6 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
+    container_name: laravel_app
     ports:
       - "8000:8000"
     env_file:
@@ -18,13 +19,16 @@ services:
         condition: service_healthy
     command: >
       sh -c "
+        php artisan key:generate &&
         php artisan migrate --force &&
         php artisan db:seed --force &&
+        php artisan passport:keys &&
         php artisan serve --host=0.0.0.0 --port=8000
       "
 
   db:
     image: postgres:15-alpine
+    container_name: postgres_db
     environment:
       POSTGRES_DB: laravel
       POSTGRES_USER: laravel

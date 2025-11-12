@@ -212,28 +212,6 @@ paths:
                         type: string
                         format: date-time
                         example: "2025-12-10T08:47:17.442409Z"
-                      user:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                            example: "OE093939304004040040"
-                          nom:
-                            type: string
-                            example: "Fatou"
-                          prenom:
-                            type: string
-                            example: "Fall"
-                          telephone:
-                            type: string
-                            example: "771234567"
-                          email:
-                            type: string
-                            example: "fatou.fall@gmail.com"
-                          role:
-                            type: string
-                            example: "client"
-                            description: "Tous les utilisateurs sont clients par défaut"
         '401':
           description: Téléphone ou code PIN invalide
 

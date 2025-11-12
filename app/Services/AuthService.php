@@ -93,14 +93,6 @@ class AuthService
             'expires_in' => 60 * 60, // 60 minutes en secondes
             'expires_at' => $accessTokenExpiresAt->toISOString(),
             'refresh_expires_at' => $refreshTokenExpiresAt->toISOString(),
-            'user' => [
-                'id' => $user->id,
-                'nom' => $user->nom,
-                'prenom' => $user->prenom,
-                'telephone' => $user->telephone,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
         ];
     }
 

@@ -36,6 +36,7 @@ class TransactionService
             return [
                 'libelle' => $transaction->libelle,
                 'montant' => $montantAffiche,
+                'expediteur' => $transaction->compte->user->nom . ' ' . $transaction->compte->user->prenom,
                 'destinataire' => $destinataireInfo,
                 'date' => $transaction->date_transaction->format('Y-m-d'),
                 'reference' => $transaction->reference,
@@ -106,11 +107,6 @@ class TransactionService
 
         try {
             $type = $data['type'];
-
-            // Vérifier que le compte appartient à l'utilisateur
-            if ($compte->id_client !== auth()->id()) {
-                throw new \Exception('Accès non autorisé à ce compte');
-            }
 
             $transaction = $compte->transactions()->create([
                 'type' => $type,
@@ -249,6 +245,7 @@ class TransactionService
             'libelle' => $transaction->libelle,
             'montant' => $montantAffiche,
             'client' => $transaction->numero_destinataire ?? $transaction->code_marchand,
+            'expediteur' => $compte->user->nom . ' ' . $compte->user->prenom,
             'date' => $transaction->date_transaction->format('d/m/Y'),
             'reference' => $transaction->reference,
             'type' => $transaction->type,

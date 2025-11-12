@@ -57,6 +57,9 @@ paths:
                             montant:
                               type: string
                               example: "-10 000 CFA"
+                            expediteur:
+                              type: string
+                              example: "Dié Niang"
                             destinataire:
                               type: object
                               properties:
@@ -204,6 +207,9 @@ paths:
                       client:
                         type: string
                         example: "771234567"
+                      expediteur:
+                        type: string
+                        example: "Dié Niang"
                       date:
                         type: string
                         example: "10/11/2025"

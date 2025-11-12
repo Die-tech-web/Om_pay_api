@@ -82,9 +82,356 @@ paths:
           description: Non authentifié
         '404':
           description: Compte non trouvé
+  /comptes/{numero_compte}/solde:
+    get:
+      summary: Récupérer le solde, type, statut et code QR d'un compte par numéro
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OMABC12345678"
+      responses:
+        '200':
+          description: Solde récupéré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Solde récupéré avec succès"
+                  data:
+                    type: object
+                    properties:
+                      solde:
+                        type: number
+                        format: float
+                        example: 150000.50
+                      type:
+                        type: string
+                        enum: ["client", "marchand"]
+                        example: "client"
+                      statut:
+                        type: string
+                        enum: ["actif", "bloque", "ferme"]
+                        example: "actif"
+                      code_qr:
+                        type: string
+                        description: "Code QR en base64 pour le compte"
+                        example: "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAgAElEQVR4nOz9..."
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+  /comptes/{numero_compte}/transactions:
+    get:
+      summary: Récupérer toutes les transactions liées à un compte (entrantes et sortantes)
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OMABC12345678"
+      responses:
+        '200':
+          description: Transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transactions récupérées avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid-string"
+                        compte_id:
+                          type: string
+                          example: "uuid-compte"
+                        type:
+                          type: string
+                          enum: ["depot", "retrait", "transfert", "paiement", "frais"]
+                          example: "transfert"
+                        montant:
+                          type: number
+                          format: decimal
+                          example: 50000.00
+                        libelle:
+                          type: string
+                          example: "Transfert vers ami"
+                        description:
+                          type: string
+                          example: "Transfert d'argent"
+                        numero_destinataire:
+                          type: string
+                          example: "OMXYZ98765432"
+                        code_marchand:
+                          type: string
+                          example: null
+                        reference:
+                          type: string
+                          example: "REF123456789"
+                        date_transaction:
+                          type: string
+                          format: date-time
+                          example: "2024-11-12T10:30:00Z"
+                        statut:
+                          type: string
+                          enum: ["en_attente", "validee", "annulee"]
+                          example: "validee"
+                        expediteur:
+                          type: string
+                          description: "Nom et prénom de l'expéditeur de la transaction"
+                          example: "John Doe"
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+  /comptes/{numero_compte}/mes-transactions:
+    get:
+      summary: Récupérer uniquement les transactions effectuées par le propriétaire du compte
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OMABC12345678"
+      responses:
+        '200':
+          description: Mes transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Mes transactions récupérées avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid-string"
+                        compte_id:
+                          type: string
+                          example: "uuid-compte"
+                        type:
+                          type: string
+                          enum: ["depot", "retrait", "transfert", "paiement", "frais"]
+                          example: "transfert"
+                        montant:
+                          type: number
+                          format: decimal
+                          example: 50000.00
+                        libelle:
+                          type: string
+                          example: "Transfert vers ami"
+                        description:
+                          type: string
+                          example: "Transfert d'argent"
+                        numero_destinataire:
+                          type: string
+                          example: "OMXYZ98765432"
+                        code_marchand:
+                          type: string
+                          example: null
+                        reference:
+                          type: string
+                          example: "REF123456789"
+                        date_transaction:
+                          type: string
+                          format: date-time
+                          example: "2024-11-12T10:30:00Z"
+                        statut:
+                          type: string
+                          enum: ["en_attente", "validee", "annulee"]
+                          example: "validee"
+                        expediteur:
+                          type: string
+                          description: "Nom et prénom de l'expéditeur de la transaction"
+                          example: "John Doe"
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+    post:
+      summary: Effectuer une transaction depuis un compte spécifique
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OMABC12345678"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - title: Transfert
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["transfert"]
+                      example: "transfert"
+                    numero_telephone:
+                      type: string
+                      description: "Numéro de téléphone du destinataire au format +221XXXXXXXXX"
+                      example: "+221771234567"
+                    montant_transaction:
+                      type: number
+                      format: float
+                      example: 5000
+                - title: Paiement marchand
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["paiement"]
+                      example: "paiement"
+                    code_marchand:
+                      type: string
+                      description: "Code marchand du commerce"
+                      example: "CAF001"
+                    montant_transaction:
+                      type: number
+                      format: float
+                      example: 5000
+                - title: Dépôt
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["depot"]
+                      example: "depot"
+                    montant_transaction:
+                      type: number
+                      format: float
+                      example: 10000
+                - title: Retrait
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: ["retrait"]
+                      example: "retrait"
+                    montant_transaction:
+                      type: number
+                      format: float
+                      example: 5000
+            examples:
+              transfert:
+                summary: Exemple de transfert d'argent
+                value:
+                  type: "transfert"
+                  numero_telephone: "+221771234567"
+                  montant_transaction: 3000
+              paiement:
+                summary: Exemple de paiement marchand
+                value:
+                  type: "paiement"
+                  code_marchand: "CAF001"
+                  montant_transaction: 7500
+              depot:
+                summary: Exemple de dépôt d'argent
+                value:
+                  type: "depot"
+                  montant_transaction: 10000
+              retrait:
+                summary: Exemple de retrait
+                value:
+                  type: "retrait"
+                  montant_transaction: 5000
+      responses:
+        '201':
+          description: Transaction effectuée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Transaction effectuée avec succès"
+                  data:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: "transfert"
+                      montant:
+                        type: number
+                        format: float
+                        example: 5000
+                      expediteur:
+                        type: string
+                        example: "John Doe"
+                      destinataire:
+                        type: string
+                        example: "OMACLIENT123"
+                      reference:
+                        type: string
+                        example: "PP20251112742519D225"
+                      date:
+                        type: string
+                        format: date
+                        example: "12/11/2025"
+                      statut:
+                        type: string
+                        example: "validee"
+        '400':
+          description: Erreur de validation ou solde insuffisant
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
 
 securitySchemes:
-  bearerAuth:
-    type: http
-    scheme: bearer
-    bearerFormat: JWT
+ bearerAuth:
+   type: http
+   scheme: bearer
+   bearerFormat: JWT

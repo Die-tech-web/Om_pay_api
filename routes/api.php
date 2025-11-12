@@ -41,4 +41,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/mes-transactions', [TransactionController::class, 'index']); // Mes transactions
     Route::post('/mes-transactions', [TransactionController::class, 'store']); // Nouvelle transaction
     Route::get('/mes-transactions/{reference}', [TransactionController::class, 'show']); // Détails transaction par référence
+
+    // Nouveaux endpoints pour comptes par numéro
+    Route::get('/comptes/{numero_compte}/solde', [CompteController::class, 'getSolde']);
+    Route::get('/comptes/{numero_compte}/transactions', [CompteController::class, 'getTransactions']);
+    Route::get('/comptes/{numero_compte}/mes-transactions', [CompteController::class, 'getMesTransactions']);
+    Route::post('/comptes/{numero_compte}/transactions', [CompteController::class, 'storeTransaction']);
 });

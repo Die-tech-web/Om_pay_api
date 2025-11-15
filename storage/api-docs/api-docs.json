@@ -364,13 +364,89 @@
                                                         }
                                                     }
                                                 },
-                                                "created_at": {
+                                                "nom": {
                                                     "type": "string",
-                                                    "format": "date-time"
+                                                    "example": "John"
                                                 },
-                                                "updated_at": {
+                                                "prenom": {
                                                     "type": "string",
-                                                    "format": "date-time"
+                                                    "example": "Doe"
+                                                },
+                                                "telephone": {
+                                                    "type": "string",
+                                                    "example": "+221771234567"
+                                                },
+                                                "transactions": {
+                                                    "type": "array",
+                                                    "description": "Les 10 derni\u00e8res transactions du compte (entrantes et sortantes), tri\u00e9es par date d\u00e9croissante",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "example": "uuid-transaction"
+                                                            },
+                                                            "compte_id": {
+                                                                "type": "string",
+                                                                "example": "uuid-compte"
+                                                            },
+                                                            "type": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "depot",
+                                                                    "retrait",
+                                                                    "transfert",
+                                                                    "paiement",
+                                                                    "frais"
+                                                                ],
+                                                                "example": "transfert"
+                                                            },
+                                                            "montant": {
+                                                                "type": "number",
+                                                                "format": "decimal",
+                                                                "example": 50000
+                                                            },
+                                                            "libelle": {
+                                                                "type": "string",
+                                                                "example": "Transfert vers ami"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Transfert d'argent"
+                                                            },
+                                                            "numero_destinataire": {
+                                                                "type": "string",
+                                                                "example": "OMXYZ98765432"
+                                                            },
+                                                            "code_marchand": {
+                                                                "type": "string",
+                                                                "example": null
+                                                            },
+                                                            "reference": {
+                                                                "type": "string",
+                                                                "example": "REF123456789"
+                                                            },
+                                                            "date_transaction": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2024-11-12T10:30:00Z"
+                                                            },
+                                                            "statut": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "en_attente",
+                                                                    "validee",
+                                                                    "annulee"
+                                                                ],
+                                                                "example": "validee"
+                                                            },
+                                                            "expediteur": {
+                                                                "type": "string",
+                                                                "description": "Nom et pr\u00e9nom de l'exp\u00e9diteur de la transaction",
+                                                                "example": "John Doe"
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -509,129 +585,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Transactions r\u00e9cup\u00e9r\u00e9es avec succ\u00e8s"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "example": "uuid-string"
-                                                    },
-                                                    "compte_id": {
-                                                        "type": "string",
-                                                        "example": "uuid-compte"
-                                                    },
-                                                    "type": {
-                                                        "type": "string",
-                                                        "enum": [
-                                                            "depot",
-                                                            "retrait",
-                                                            "transfert",
-                                                            "paiement",
-                                                            "frais"
-                                                        ],
-                                                        "example": "transfert"
-                                                    },
-                                                    "montant": {
-                                                        "type": "number",
-                                                        "format": "decimal",
-                                                        "example": 50000
-                                                    },
-                                                    "libelle": {
-                                                        "type": "string",
-                                                        "example": "Transfert vers ami"
-                                                    },
-                                                    "description": {
-                                                        "type": "string",
-                                                        "example": "Transfert d'argent"
-                                                    },
-                                                    "numero_destinataire": {
-                                                        "type": "string",
-                                                        "example": "OMXYZ98765432"
-                                                    },
-                                                    "code_marchand": {
-                                                        "type": "string",
-                                                        "example": null
-                                                    },
-                                                    "reference": {
-                                                        "type": "string",
-                                                        "example": "REF123456789"
-                                                    },
-                                                    "date_transaction": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2024-11-12T10:30:00Z"
-                                                    },
-                                                    "statut": {
-                                                        "type": "string",
-                                                        "enum": [
-                                                            "en_attente",
-                                                            "validee",
-                                                            "annulee"
-                                                        ],
-                                                        "example": "validee"
-                                                    },
-                                                    "expediteur": {
-                                                        "type": "string",
-                                                        "description": "Nom et pr\u00e9nom de l'exp\u00e9diteur de la transaction",
-                                                        "example": "John Doe"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Non authentifi\u00e9"
-                    },
-                    "404": {
-                        "description": "Compte non trouv\u00e9"
-                    }
-                }
-            }
-        },
-        "/comptes/{numero_compte}/mes-transactions": {
-            "get": {
-                "summary": "R\u00e9cup\u00e9rer uniquement les transactions effectu\u00e9es par le propri\u00e9taire du compte",
-                "tags": [
-                    "Comptes"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "numero_compte",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "example": "OMABC12345678"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Mes transactions r\u00e9cup\u00e9r\u00e9es avec succ\u00e8s",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Mes transactions r\u00e9cup\u00e9r\u00e9es avec succ\u00e8s"
                                         },
                                         "data": {
                                             "type": "array",
@@ -921,6 +874,129 @@
                     },
                     "400": {
                         "description": "Erreur de validation ou solde insuffisant"
+                    },
+                    "401": {
+                        "description": "Non authentifi\u00e9"
+                    },
+                    "404": {
+                        "description": "Compte non trouv\u00e9"
+                    }
+                }
+            }
+        },
+        "/comptes/{numero_compte}/mes-transactions": {
+            "get": {
+                "summary": "R\u00e9cup\u00e9rer uniquement les transactions effectu\u00e9es par le propri\u00e9taire du compte",
+                "tags": [
+                    "Comptes"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "numero_compte",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "OMABC12345678"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mes transactions r\u00e9cup\u00e9r\u00e9es avec succ\u00e8s",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mes transactions r\u00e9cup\u00e9r\u00e9es avec succ\u00e8s"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "uuid-string"
+                                                    },
+                                                    "compte_id": {
+                                                        "type": "string",
+                                                        "example": "uuid-compte"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "depot",
+                                                            "retrait",
+                                                            "transfert",
+                                                            "paiement",
+                                                            "frais"
+                                                        ],
+                                                        "example": "transfert"
+                                                    },
+                                                    "montant": {
+                                                        "type": "number",
+                                                        "format": "decimal",
+                                                        "example": 50000
+                                                    },
+                                                    "libelle": {
+                                                        "type": "string",
+                                                        "example": "Transfert vers ami"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Transfert d'argent"
+                                                    },
+                                                    "numero_destinataire": {
+                                                        "type": "string",
+                                                        "example": "OMXYZ98765432"
+                                                    },
+                                                    "code_marchand": {
+                                                        "type": "string",
+                                                        "example": null
+                                                    },
+                                                    "reference": {
+                                                        "type": "string",
+                                                        "example": "REF123456789"
+                                                    },
+                                                    "date_transaction": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-11-12T10:30:00Z"
+                                                    },
+                                                    "statut": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "en_attente",
+                                                            "validee",
+                                                            "annulee"
+                                                        ],
+                                                        "example": "validee"
+                                                    },
+                                                    "expediteur": {
+                                                        "type": "string",
+                                                        "description": "Nom et pr\u00e9nom de l'exp\u00e9diteur de la transaction",
+                                                        "example": "John Doe"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Non authentifi\u00e9"

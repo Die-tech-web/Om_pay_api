@@ -65,7 +65,7 @@ paths:
           description: 'Compte récupéré avec succès'
           content:
             application/json:
-              schema: { type: object, properties: { success: { type: boolean, example: true }, message: { type: string, example: 'Compte récupéré avec succès' }, data: { type: object, properties: { id: { type: string, example: uuid-string }, id_client: { type: string, example: OE093939304004040040 }, numero_compte: { type: string, example: OMABC12345678 }, type: { type: string, enum: [client, marchand], example: client }, date_creation: { type: string, format: date, example: '2024-01-15' }, statut: { type: string, enum: [actif, bloque, ferme], example: actif }, code_qr: { type: string, description: 'Code QR en base64 pour le compte', example: iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAgAElEQVR4nOz9... }, solde: { type: number, format: float, example: 150000.5, description: 'Solde calculé dynamiquement' }, metadata: { type: object, properties: { derniereModification: { type: string, format: date-time }, version: { type: integer, example: 1 } } }, created_at: { type: string, format: date-time }, updated_at: { type: string, format: date-time } } } } }
+              schema: { type: object, properties: { success: { type: boolean, example: true }, message: { type: string, example: 'Compte récupéré avec succès' }, data: { type: object, properties: { id: { type: string, example: uuid-string }, id_client: { type: string, example: OE093939304004040040 }, numero_compte: { type: string, example: OMABC12345678 }, type: { type: string, enum: [client, marchand], example: client }, date_creation: { type: string, format: date, example: '2024-01-15' }, statut: { type: string, enum: [actif, bloque, ferme], example: actif }, code_qr: { type: string, description: 'Code QR en base64 pour le compte', example: iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAgAElEQVR4nOz9... }, solde: { type: number, format: float, example: 150000.5, description: 'Solde calculé dynamiquement' }, metadata: { type: object, properties: { derniereModification: { type: string, format: date-time }, version: { type: integer, example: 1 } } }, nom: { type: string, example: John }, prenom: { type: string, example: Doe }, telephone: { type: string, example: '+221771234567' }, transactions: { type: array, description: 'Les 10 dernières transactions du compte (entrantes et sortantes), triées par date décroissante', items: { type: object, properties: { id: { type: string, example: uuid-transaction }, compte_id: { type: string, example: uuid-compte }, type: { type: string, enum: [depot, retrait, transfert, paiement, frais], example: transfert }, montant: { type: number, format: decimal, example: 50000.0 }, libelle: { type: string, example: 'Transfert vers ami' }, description: { type: string, example: "Transfert d'argent" }, numero_destinataire: { type: string, example: OMXYZ98765432 }, code_marchand: { type: string, example: null }, reference: { type: string, example: REF123456789 }, date_transaction: { type: string, format: date-time, example: '2024-11-12T10:30:00Z' }, statut: { type: string, enum: [en_attente, validee, annulee], example: validee }, expediteur: { type: string, description: "Nom et prénom de l'expéditeur de la transaction", example: 'John Doe' } } } } } } } }
         401:
           description: 'Non authentifié'
         404:
@@ -122,32 +122,6 @@ paths:
           description: 'Non authentifié'
         404:
           description: 'Compte non trouvé'
-  '/comptes/{numero_compte}/mes-transactions':
-    get:
-      summary: 'Récupérer uniquement les transactions effectuées par le propriétaire du compte'
-      tags:
-        - Comptes
-      security:
-        -
-          bearerAuth: {  }
-      parameters:
-        -
-          name: numero_compte
-          in: path
-          required: true
-          schema:
-            type: string
-          example: OMABC12345678
-      responses:
-        200:
-          description: 'Mes transactions récupérées avec succès'
-          content:
-            application/json:
-              schema: { type: object, properties: { success: { type: boolean, example: true }, message: { type: string, example: 'Mes transactions récupérées avec succès' }, data: { type: array, items: { type: object, properties: { id: { type: string, example: uuid-string }, compte_id: { type: string, example: uuid-compte }, type: { type: string, enum: [depot, retrait, transfert, paiement, frais], example: transfert }, montant: { type: number, format: decimal, example: 50000.0 }, libelle: { type: string, example: 'Transfert vers ami' }, description: { type: string, example: "Transfert d'argent" }, numero_destinataire: { type: string, example: OMXYZ98765432 }, code_marchand: { type: string, example: null }, reference: { type: string, example: REF123456789 }, date_transaction: { type: string, format: date-time, example: '2024-11-12T10:30:00Z' }, statut: { type: string, enum: [en_attente, validee, annulee], example: validee }, expediteur: { type: string, description: "Nom et prénom de l'expéditeur de la transaction", example: 'John Doe' } } } } } }
-        401:
-          description: 'Non authentifié'
-        404:
-          description: 'Compte non trouvé'
     post:
       summary: 'Effectuer une transaction depuis un compte spécifique'
       tags:
@@ -182,6 +156,32 @@ paths:
               schema: { type: object, properties: { success: { type: boolean, example: true }, message: { type: string, example: 'Transaction effectuée avec succès' }, data: { type: object, properties: { type: { type: string, example: transfert }, montant: { type: number, format: float, example: 5000 }, expediteur: { type: string, example: 'John Doe' }, destinataire: { type: string, example: OMACLIENT123 }, reference: { type: string, example: PP20251112742519D225 }, date: { type: string, format: date, example: 12/11/2025 }, statut: { type: string, example: validee } } } } }
         400:
           description: 'Erreur de validation ou solde insuffisant'
+        401:
+          description: 'Non authentifié'
+        404:
+          description: 'Compte non trouvé'
+  '/comptes/{numero_compte}/mes-transactions':
+    get:
+      summary: 'Récupérer uniquement les transactions effectuées par le propriétaire du compte'
+      tags:
+        - Comptes
+      security:
+        -
+          bearerAuth: {  }
+      parameters:
+        -
+          name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: OMABC12345678
+      responses:
+        200:
+          description: 'Mes transactions récupérées avec succès'
+          content:
+            application/json:
+              schema: { type: object, properties: { success: { type: boolean, example: true }, message: { type: string, example: 'Mes transactions récupérées avec succès' }, data: { type: array, items: { type: object, properties: { id: { type: string, example: uuid-string }, compte_id: { type: string, example: uuid-compte }, type: { type: string, enum: [depot, retrait, transfert, paiement, frais], example: transfert }, montant: { type: number, format: decimal, example: 50000.0 }, libelle: { type: string, example: 'Transfert vers ami' }, description: { type: string, example: "Transfert d'argent" }, numero_destinataire: { type: string, example: OMXYZ98765432 }, code_marchand: { type: string, example: null }, reference: { type: string, example: REF123456789 }, date_transaction: { type: string, format: date-time, example: '2024-11-12T10:30:00Z' }, statut: { type: string, enum: [en_attente, validee, annulee], example: validee }, expediteur: { type: string, description: "Nom et prénom de l'expéditeur de la transaction", example: 'John Doe' } } } } } }
         401:
           description: 'Non authentifié'
         404:

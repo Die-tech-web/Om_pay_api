@@ -72,12 +72,62 @@ paths:
                           version:
                             type: integer
                             example: 1
-                      created_at:
+                      nom:
                         type: string
-                        format: date-time
-                      updated_at:
+                        example: "John"
+                      prenom:
                         type: string
-                        format: date-time
+                        example: "Doe"
+                      telephone:
+                        type: string
+                        example: "+221771234567"
+                      transactions:
+                        type: array
+                        description: "Les 10 dernières transactions du compte (entrantes et sortantes), triées par date décroissante"
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "uuid-transaction"
+                            compte_id:
+                              type: string
+                              example: "uuid-compte"
+                            type:
+                              type: string
+                              enum: ["depot", "retrait", "transfert", "paiement", "frais"]
+                              example: "transfert"
+                            montant:
+                              type: number
+                              format: decimal
+                              example: 50000.00
+                            libelle:
+                              type: string
+                              example: "Transfert vers ami"
+                            description:
+                              type: string
+                              example: "Transfert d'argent"
+                            numero_destinataire:
+                              type: string
+                              example: "OMXYZ98765432"
+                            code_marchand:
+                              type: string
+                              example: null
+                            reference:
+                              type: string
+                              example: "REF123456789"
+                            date_transaction:
+                              type: string
+                              format: date-time
+                              example: "2024-11-12T10:30:00Z"
+                            statut:
+                              type: string
+                              enum: ["en_attente", "validee", "annulee"]
+                              example: "validee"
+                            expediteur:
+                              type: string
+                              description: "Nom et prénom de l'expéditeur de la transaction"
+                              example: "John Doe"
         '401':
           description: Non authentifié
         '404':
@@ -161,84 +211,6 @@ paths:
                   message:
                     type: string
                     example: "Transactions récupérées avec succès"
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          example: "uuid-string"
-                        compte_id:
-                          type: string
-                          example: "uuid-compte"
-                        type:
-                          type: string
-                          enum: ["depot", "retrait", "transfert", "paiement", "frais"]
-                          example: "transfert"
-                        montant:
-                          type: number
-                          format: decimal
-                          example: 50000.00
-                        libelle:
-                          type: string
-                          example: "Transfert vers ami"
-                        description:
-                          type: string
-                          example: "Transfert d'argent"
-                        numero_destinataire:
-                          type: string
-                          example: "OMXYZ98765432"
-                        code_marchand:
-                          type: string
-                          example: null
-                        reference:
-                          type: string
-                          example: "REF123456789"
-                        date_transaction:
-                          type: string
-                          format: date-time
-                          example: "2024-11-12T10:30:00Z"
-                        statut:
-                          type: string
-                          enum: ["en_attente", "validee", "annulee"]
-                          example: "validee"
-                        expediteur:
-                          type: string
-                          description: "Nom et prénom de l'expéditeur de la transaction"
-                          example: "John Doe"
-        '401':
-          description: Non authentifié
-        '404':
-          description: Compte non trouvé
-  /comptes/{numero_compte}/mes-transactions:
-    get:
-      summary: Récupérer uniquement les transactions effectuées par le propriétaire du compte
-      tags:
-        - Comptes
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: numero_compte
-          in: path
-          required: true
-          schema:
-            type: string
-          example: "OMABC12345678"
-      responses:
-        '200':
-          description: Mes transactions récupérées avec succès
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "Mes transactions récupérées avec succès"
                   data:
                     type: array
                     items:
@@ -425,6 +397,84 @@ paths:
                         example: "validee"
         '400':
           description: Erreur de validation ou solde insuffisant
+        '401':
+          description: Non authentifié
+        '404':
+          description: Compte non trouvé
+  /comptes/{numero_compte}/mes-transactions:
+    get:
+      summary: Récupérer uniquement les transactions effectuées par le propriétaire du compte
+      tags:
+        - Comptes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: numero_compte
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "OMABC12345678"
+      responses:
+        '200':
+          description: Mes transactions récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Mes transactions récupérées avec succès"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "uuid-string"
+                        compte_id:
+                          type: string
+                          example: "uuid-compte"
+                        type:
+                          type: string
+                          enum: ["depot", "retrait", "transfert", "paiement", "frais"]
+                          example: "transfert"
+                        montant:
+                          type: number
+                          format: decimal
+                          example: 50000.00
+                        libelle:
+                          type: string
+                          example: "Transfert vers ami"
+                        description:
+                          type: string
+                          example: "Transfert d'argent"
+                        numero_destinataire:
+                          type: string
+                          example: "OMXYZ98765432"
+                        code_marchand:
+                          type: string
+                          example: null
+                        reference:
+                          type: string
+                          example: "REF123456789"
+                        date_transaction:
+                          type: string
+                          format: date-time
+                          example: "2024-11-12T10:30:00Z"
+                        statut:
+                          type: string
+                          enum: ["en_attente", "validee", "annulee"]
+                          example: "validee"
+                        expediteur:
+                          type: string
+                          description: "Nom et prénom de l'expéditeur de la transaction"
+                          example: "John Doe"
         '401':
           description: Non authentifié
         '404':

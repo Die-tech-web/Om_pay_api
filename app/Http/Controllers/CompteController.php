@@ -43,7 +43,7 @@ class CompteController extends Controller
     {
         // Récupérer l'utilisateur connecté
         $user = auth()->user();
-        
+
         // Récupérer le compte via la relation
         $compte = Compte::where('id_client', $user->id)->first();
 
@@ -55,18 +55,42 @@ class CompteController extends Controller
         if ($compte->id_client !== $user->id) {
             return $this->errorResponse('Accès non autorisé', 403);
         }
-        
+
         $compte = $this->compteService->getCompteWithTransactions($compte);
+
+        // Récupérer les 10 dernières transactions (entrantes et sortantes)
+        $transactions = Transaction::where(function($query) use ($compte) {
+            $query->where('compte_id', $compte->id)
+                  ->orWhere('numero_destinataire', $compte->numero_compte);
+        })->orderBy('date_transaction', 'desc')->limit(10)->get();
+
+        // Ajouter les informations de l'expéditeur pour chaque transaction
+        $transactions->transform(function ($transaction) use ($compte) {
+            $transactionArray = $transaction->toArray();
+
+            // Pour les transactions sortantes (compte_id == compte actuel)
+            if ($transaction->compte_id === $compte->id) {
+                $transactionArray['expediteur'] = $compte->user->nom . ' ' . $compte->user->prenom;
+            }
+            // Pour les transactions entrantes (numero_destinataire == numero_compte)
+            else {
+                $expediteurUser = $transaction->compte->user;
+                $transactionArray['expediteur'] = $expediteurUser ? $expediteurUser->nom . ' ' . $expediteurUser->prenom : 'Inconnu';
+            }
+
+            return $transactionArray;
+        });
 
         // Formater la réponse : infos client directement dans data + métadonnées en bas
         $compteArray = $compte->toArray();
-        
+
         // Inclure les informations de l'utilisateur directement dans data
         $compteArray = array_merge($compteArray, [
             'nom' => $user->nom,
             'prenom' => $user->prenom,
             'telephone' => $user->telephone,
             'id_client' => $user->id,
+            'transactions' => $transactions,
         ]);
 
         // Supprimer le code_pin et les données redondantes pour la sécurité

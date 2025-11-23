@@ -40,6 +40,13 @@ class TestComptesSeeder extends Seeder
                 'email' => 'fatou.sow@example.com',
                 'code_pin' => '9876',
             ],
+            [
+                'nom' => 'DIE',
+                'prenom' => 'NIANG',
+                'telephone' => '778801947',
+                'email' => 'dieniang32@gmail.com',
+                'code_pin' => '1234',
+            ],
         ];
 
         foreach ($usersData as $userData) {

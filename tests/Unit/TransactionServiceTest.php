@@ -81,38 +81,28 @@ class TransactionServiceTest extends TestCase
     /** @test */
     public function test_transfer_avec_frais()
     {
-        DB::beginTransaction();
-        
-        try {
-            // Effectuer un transfert de 10000 avec frais
-            $transaction = $this->transactionService->createTransaction($this->compte1, [
-                'type' => 'transfert',
-                'montant_transaction' => 10000,
-                'numero_telephone' => '987654321', // Téléphone du user2
-            ]);
+        // Effectuer un transfert de 10000 avec frais
+        $transaction = $this->transactionService->createTransaction($this->compte1, [
+            'type' => 'transfert',
+            'montant_transaction' => 10000,
+            'numero_telephone' => '987654321', // Téléphone du user2
+        ]);
 
-            // Vérifier que le solde du compte 1 a diminué (montant + frais)
-            $soldeCompte1 = $this->compte1->fresh()->getSoldeAttribute();
-            $frais = max(10000 * 0.01, 100); // 100 FCFA (minimum)
-            $this->assertEquals(50000 - 10000 - $frais, $soldeCompte1);
+        // Vérifier que le solde du compte 1 a diminué (montant + frais)
+        $soldeCompte1 = $this->compte1->fresh()->getSoldeAttribute();
+        $frais = max(10000 * 0.01, 100); // 100 FCFA (minimum)
+        $this->assertEquals(50000 - 10000 - $frais, $soldeCompte1);
 
-            // Vérifier que le compte 2 a reçu le montant
-            $soldeCompte2 = $this->compte2->fresh()->getSoldeAttribute();
-            $this->assertEquals(10000, $soldeCompte2);
+        // Vérifier que le compte 2 a reçu le montant
+        $soldeCompte2 = $this->compte2->fresh()->getSoldeAttribute();
+        $this->assertEquals(10000, $soldeCompte2);
 
-            // Vérifier les transactions créées
-            $transactionsCompte1 = $this->compte1->fresh()->transactions;
-            $this->assertCount(3, $transactionsCompte1); // dépôt initial + transfert + frais
+        // Vérifier les transactions créées
+        $transactionsCompte1 = $this->compte1->fresh()->transactions;
+        $this->assertCount(3, $transactionsCompte1); // dépôt initial + transfert + frais
 
-            $transactionsCompte2 = $this->compte2->fresh()->transactions;
-            $this->assertCount(1, $transactionsCompte2); // dépôt de transfert
-
-            DB::commit();
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        $transactionsCompte2 = $this->compte2->fresh()->transactions;
+        $this->assertCount(1, $transactionsCompte2); // dépôt de transfert
     }
 
     /** @test */
@@ -139,7 +129,7 @@ class TransactionServiceTest extends TestCase
 
         // Essayer de transférer 10000 (qui coûtera 10000 + 100 = 10100)
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Solde insuffisant pour couvrir le montant et les frais');
+        $this->expectExceptionMessage('Solde insuffisant pour effectuer ce transfert');
 
         $this->transactionService->createTransaction($compte, [
             'type' => 'transfert',

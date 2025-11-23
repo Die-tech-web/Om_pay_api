@@ -55,7 +55,6 @@ class DatabaseSeeder extends Seeder
         $client->save();
 
         $personalAccessClient = new \Laravel\Passport\PersonalAccessClient();
-        $personalAccessClient->id = (string) \Illuminate\Support\Str::uuid();
         $personalAccessClient->client_id = $client->id;
         $personalAccessClient->save();
 

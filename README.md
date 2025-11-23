@@ -58,6 +58,7 @@ OM Pay est une API REST complète pour un système de paiement mobile développ�
 - `POST /api/mes-transactions` - Nouvelle transaction
 - `GET /api/mes-transactions/{reference}` - Détails d'une transaction
 
+
 ### ✅ Gestion des Marchands
 - Base de données de marchands avec codes uniques
 - Validation des paiements marchands
@@ -226,7 +227,7 @@ QR_CODE_MARGIN=4
 
 ## 🔌 Utilisation de l'API
 
-### Authentification
+### 
 ```bash
 # Inscription
 curl -X POST http://localhost:8000/api/register \
@@ -241,6 +242,7 @@ curl -X POST http://localhost:8000/api/register \
   }'
 
 # Connexion
+Authentification
 curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
   -d '{

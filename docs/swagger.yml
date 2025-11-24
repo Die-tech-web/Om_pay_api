@@ -5,8 +5,8 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:8000/api
-    description: Serveur de développement
-  - url: https://api.ompay.com
+    description: Serveur local
+  - url: https://om-pay-api-p17s.onrender.com/api
     description: Serveur de production
 
 tags:

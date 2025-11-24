@@ -46,7 +46,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('resources/docs'),
+                    base_path('docs'),
                 ],
             ],
         ],
@@ -158,7 +158,7 @@ return [
              *
              * @see \OpenApi\scan
              */
-            'pattern' => null,
+            'pattern' => '*.php',
 
             /*
              * Absolute path to directories that should be excluded from scanning
@@ -168,6 +168,10 @@ return [
             'exclude' => [
                 base_path('app'),
                 base_path('routes'),
+                base_path('resources/docs/auth.yml'),
+                base_path('resources/docs/comptes.yml'),
+                base_path('resources/docs/transactions.yml'),
+                base_path('resources/docs/marchands.yml'),
             ],
 
             /*
@@ -225,6 +229,20 @@ return [
                     'passport' => []
                 ],
             ],
+        ],
+
+        /*
+         * Servers configuration for Swagger UI
+         */
+        'servers' => [
+            [
+                'url' => 'http://localhost:8000',
+                'description' => 'Serveur local'
+            ],
+            [
+                'url' => 'https://om-pay-api-p17s.onrender.com',
+                'description' => 'Serveur de production'
+            ]
         ],
 
         /*

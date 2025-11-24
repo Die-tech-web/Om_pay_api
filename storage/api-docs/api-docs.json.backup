@@ -1,0 +1,17 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "OM Pay API",
+        "description": "API complète pour le système de paiement OM Pay",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "Serveur local"
+        },
+        {
+            "url": "https://om-pay-api-p17s.onrender.com/api",
+            "description": "Serveur de production"
+        }
+    ],
